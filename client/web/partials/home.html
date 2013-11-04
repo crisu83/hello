@@ -1,0 +1,71 @@
+<div class="home-ctrl">
+    <div class="container">
+        <div class="col-md-6">
+            <img class="avatar" src="http://www.gravatar.com/avatar/4484acb7484aaf2ee2db4fac2bab274d?s=300" alt="Avatar" />
+            <h1>
+                @Crisu83<br>
+                <small>Christoffer Niska</small>
+            </h1>
+            <p class="about"><b>Hello there</b>. I’m a professional web developer from Finland with a passion for open-source. I consider myself to be a full-stack developer and my tool-belt contains Yii, Twitter Bootstrap, LESS, Composer, Codeception, SourceTree, Git, Travis-CI, Node.js, Grunt, Vagrant and PhpStorm.</p>
+            <ul class="links">
+                <li ng-if="twitterHandle">
+                    <a href="http://twitter.com/{{twitterHandle}}" data-toggle="tooltip" data-placement="bottom" title="Twitter" rel="no-follow" target="_blank"><i class="fa fa-twitter"></i></a>
+                </li>
+                <li ng-if="githubHandle">
+                    <a href="http://github.com/{{githubHandle}}" data-toggle="tooltip" data-placement="bottom" title="GitHub" rel="no-follow" target="_blank"><i class="fa fa-github-alt"></i></a>
+                </li>
+                <li ng-if="bitbucketHandle">
+                    <a href="http://bitbucket.org/{{bitbucketHandle}}" data-toggle="tooltip" data-placement="bottom" title="Bitbucket" rel="no-follow" target="_blank"><i class="fa fa-bitbucket"></i></a>
+                </li>
+                <li ng-if="linkedinHandle">
+                    <a href="http://fi.linkedin.com/in/{{linkedinHandle}}" data-toggle="tooltip" data-placement="bottom" title="Linkedin" rel="no-follow" target="_blank"><i class="fa fa-linkedin"></i></a>
+                </li>
+                <li ng-if="gplusHandle">
+                    <a href="https://plus.google.com/+{{gplusHandle}}" data-toggle="tooltip" data-placement="bottom" title="Google+" rel="no-follow" target="_blank"><i class="fa fa-google-plus"></i></a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <ul class="repos">
+                <li ng-repeat="repo in repos">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="repo-details">
+                                <h3>
+                                    <a href="{{repo.html_url}}" rel="no-follow" target="_blank">{{ repo.name }}</a>
+                                    <small class="owner"><a href="{{repo.owner.html_url}}" rel="no-follow" target="_blank">@{{ repo.owner.login }}</a></small>
+                                </h3>
+                                <p class="description">{{ repo.description }}</p>
+                            </div>
+                            <hr/>
+                            <div class="repo-stats">
+                                <div class="col-xs-2">
+                                    <div class="watchers"><i class="fa fa-eye"></i> <b class="stat-value">{{ repo.watchers_count }}</b></div>
+                                </div>
+                                <div class="col-xs-2">
+                                    <div class="forks"><i class="fa fa-code-fork"></i> <b class="stat-value">{{ repo.forks_count }}</b></div>
+                                </div>
+                                <div class="col-xs-2">
+                                    <div class="forks"><i class="fa fa-exclamation-circle"></i> <b class="stat-value">{{ repo.open_issues_count }}</b></div>
+                                </div>
+                                <div class="col-xs-2">
+                                    <div class="loc"><i class="fa fa-reorder"></i> <b class="stat-value">{{ repo.size }}</b></div>
+                                </div>
+                                <div class="col-xs-4" ng-if="repo.tags.length > 0">
+                                    <div class="tags">
+                                        <i class="fa fa-tag"></i>
+                                        <ul>
+                                            <li ng-repeat="tag in repo.tags">
+                                                {{tag}}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
