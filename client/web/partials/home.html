@@ -32,26 +32,26 @@
                         <div class="panel-body">
                             <div class="repo-details">
                                 <h3>
-                                    <a href="{{repo.html_url}}" rel="no-follow" target="_blank">{{ repo.name }}</a>
-                                    <small class="owner"><a href="{{repo.owner.html_url}}" rel="no-follow" target="_blank">@{{ repo.owner.login }}</a></small>
+                                    <a href="{{repo.url}}" rel="no-follow" target="_blank">{{ repo.name }}</a>
+                                    <small class="owner"><a href="{{repo.owner.url}}" rel="no-follow" target="_blank">@{{ repo.owner.name }}</a></small>
                                 </h3>
                                 <p class="description">{{ repo.description }}</p>
                             </div>
                             <hr/>
                             <div class="repo-stats">
                                 <div class="col-xs-2">
-                                    <div class="watchers"><i class="fa fa-eye"></i> <b class="stat-value">{{ repo.watchers_count }}</b></div>
+                                    <div class="watchers"><i class="fa fa-eye"></i> <b class="stat-value">{{ repo.num_watchers }}</b></div>
                                 </div>
                                 <div class="col-xs-2">
-                                    <div class="forks"><i class="fa fa-code-fork"></i> <b class="stat-value">{{ repo.forks_count }}</b></div>
+                                    <div class="forks"><i class="fa fa-code-fork"></i> <b class="stat-value">{{ repo.num_forks }}</b></div>
                                 </div>
                                 <div class="col-xs-2">
-                                    <div class="forks"><i class="fa fa-exclamation-circle"></i> <b class="stat-value">{{ repo.open_issues_count }}</b></div>
+                                    <div class="open-issues"><i class="fa fa-exclamation-circle"></i> <b class="stat-value">{{ repo.num_open_issues }}</b></div>
                                 </div>
                                 <div class="col-xs-2">
-                                    <div class="loc"><i class="fa fa-reorder"></i> <b class="stat-value">{{ repo.size }}</b></div>
+                                    <div class="loc"><i class="fa fa-reorder"></i> <b class="stat-value">{{ repo.num_lines }}</b></div>
                                 </div>
-                                <div class="col-xs-4" ng-if="repo.tags.length > 0">
+                                <div class="col-xs-4" ng-if="repo.tags.length">
                                     <div class="tags">
                                         <i class="fa fa-tag"></i>
                                         <ul>

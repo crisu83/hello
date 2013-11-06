@@ -1,8 +1,8 @@
 // require dependencies
 
-var express = require('express'),
-    config = require('./config.js'),
-    repos = require('./routes/repos');
+var express  = require('express'),
+    mongoose = require('mongoose'),
+    config   = require('./config.js');
 
 // bootstrap express
 
@@ -10,13 +10,29 @@ var app = express();
 
 app.use(express.logger());
 app.use(express.bodyParser());
-app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+
+app.configure('development', function(){
+    app.use(express.errorHandler({dumpExceptions: true, showStack: true}));
+});
+
+app.configure('production', function(){
+    app.use(express.errorHandler());
+});
 
 // we server static files under /static
 
 app.use('/static', express.static(config.webRoot));
 
-// our JSON api answers under /api
+// connect to mongodb using mongoose
+
+mongoose.connect('mongodb://localhost/folio');
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error: '));
+db.on('open', function() {
+    console.log('connected to database.');
+});
+
+var repos = require('./routes/repos')({db: db});
 
 app.get('/api/repos', repos.findAll);
 

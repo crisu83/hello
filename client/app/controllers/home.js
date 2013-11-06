@@ -7,44 +7,15 @@ angular.module("App").controller("HomeCtrl", ["$scope", "$http", function($scope
     $scope.gplusHandle = "ChristofferNiska";
     $scope.loading = true;
 
-    /*
-    $http.defaults.headers.common = {
-        "Access-Control-Allow-Origin": "*"
-    };
-
-    $http({
-        method: "GET",
-        url: "https://coderwall.com/" + $scope.codewall + ".json"
-    })
-    .success(function(data, status, headers, config) {
-        console.debug(data);
-    })
-    .error(function(data, status, headers, config) {
-
-    });
-    */
-
-    var numRepos = 16;
-
     $http({
         method: "GET",
         url: "api/repos"
     })
     .success(function(data, status, headers, config) {
-        var repos = data.slice(0, numRepos);
-
-        for (var i = 0, l = repos.length; i < l; i++) {
-            repos[i].tags = [];
-            if (repos[i].language) {
-                repos[i].tags.push(repos[i].language);
-            }
-        }
-
-        repos.sort(function(a, b) {
-            return b.watchers_count - a.watchers_count;
+        data.sort(function(a, b) {
+            return b.num_watchers - a.num_watchers;
         });
-
-        $scope.repos = repos;
+        $scope.repos = data;
         $scope.loading = false;
     })
     .error(function(data, status, headers, config) {
