@@ -1,6 +1,7 @@
 var mongoose = require('mongoose'),
     https    = require('https'),
     app      = require('../app.js'),
+    github   = require('../github.js')(),
     config   = require('../config.js');
 
 /**
@@ -26,22 +27,20 @@ var repos = function(params) {
     // Repository model.
     var Repo = mongoose.model('Repo', schema);
 
+    var lastSync,               // date when the last synchronization was performed
+        cacheDuration = 600000; // 10 min in ms
+
     /**
      * Synchronizes repositiory data from GitHub.
      * @param {function} callback
      */
     var sync = function(callback) {
-        var data = '';
-        var httpReq = https.request({
-            method: 'GET',
-            host: 'api.github.com',
-            path: '/users/' + config.githubHandle + '/repos?sort=pushed'
-        }, function(httpRes) {
-            httpRes.setEncoding('utf8');
-            httpRes.on('data', function(chunk) {
-                data += chunk;
-            });
-            httpRes.on('end', function() {
+        /**
+         *
+         * @param callback
+         */
+        var doSync = function(callback) {
+            github.api('/users/' + config.githubHandle + '/repos?sort=pushed', function(data) {
                 data = JSON.parse(data);
                 for (var i = 0, l = data.length, tags, now, attrs; i < l; i++) {
                     // skip repo if it doesn't have any watchers or forks
@@ -78,17 +77,19 @@ var repos = function(params) {
                         }
                     });
                 }
+                console.log('repositiories synchronized.');
+                lastSync = new Date();
                 callback();
             });
-        });
-        httpReq.on('error', function(error) {
-            console.log('error: ' + error.message);
-        });
-        httpReq.end();
-    };
+        };
 
-    // date when the last synchronization was performed.
-    var lastSync;
+        if (!lastSync || ((new Date() - lastSync) > cacheDuration)) {
+            doSync(callback);
+        } else {
+            console.log('repositiories fetched from cache.');
+            callback();
+        }
+    };
 
     return {
         /**
@@ -97,10 +98,7 @@ var repos = function(params) {
          * @param res
          */
         findAll: function(req, res) {
-            var now = new Date(),
-                cacheDuration = 600000; // 10 min in ms
-
-            var callback = function() {
+            sync(function() {
                 Repo.find({}, function(err, repos) {
                     if (err) {
                         console.log('error: ' + err);
@@ -108,18 +106,7 @@ var repos = function(params) {
                         res.send(repos);
                     }
                 });
-            };
-
-            if (!lastSync || ((now - lastSync) > cacheDuration)) {
-                sync(function() {
-                    console.log('repositiories synchronized.');
-                    lastSync = new Date();
-                    callback();
-                });
-            } else {
-                console.log('repositiories fetched from cache.');
-                callback();
-            }
+            });
         }
     };
 };

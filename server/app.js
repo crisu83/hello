@@ -32,14 +32,9 @@ db.on('open', function() {
     console.log('connected to database.');
 });
 
-var repos = require('./routes/repos')({db: db});
+var repos = require('./routes/repos')();
 
 app.get('/api/repos', repos.findAll);
-
-//app.get('/api/repos/:id', repos.findById);
-//app.post('/api/repos', repos.addRepo);
-//app.put('/api/repos/:id', repos.updateRepo);
-//app.delete('/api/repos/:id', repos.deleteRepo);
 
 // all other requests are redirected to our index.html file
 
