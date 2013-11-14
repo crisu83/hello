@@ -1,4 +1,5 @@
 .vagrant/*
 .idea/*
+server/config.js
 */node_modules/*
 mongod.lock
