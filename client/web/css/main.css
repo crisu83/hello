@@ -5353,12 +5353,18 @@ a:hover {
   border-radius: 5px;
   display: block;
   margin: 20px 0;
+  max-width: 300px;
+  width: 100%;
 }
 .home-ctrl h1 {
   font-size: 3.5714285714285716em;
 }
 .home-ctrl h1 > small {
+  font-size: 0.5714285714285714em;
   color: #999999;
+}
+.home-ctrl .tooltip {
+  z-index: 9999;
 }
 .home-ctrl .about {
   font-size: 1.2857142857142858em;
@@ -5371,7 +5377,7 @@ a:hover {
 }
 .home-ctrl .links > li {
   display: inline-block;
-  margin-right: 10px;
+  margin-right: 15px;
 }
 .home-ctrl .links > li a {
   font-size: 2.857142857142857em;
@@ -5381,8 +5387,10 @@ a:hover {
   color: #d9534f;
 }
 .home-ctrl .repos {
-  list-style: none;
   margin: 20px 0;
+}
+.home-ctrl .repos > ul {
+  list-style: none;
   padding-left: 0;
 }
 .home-ctrl .repos .panel {
@@ -5422,13 +5430,19 @@ a:hover {
   border-width: 1px;
 }
 .home-ctrl .repos .panel .repo-stats {
-  margin: 10px 0;
-  overflow: hidden;
+  padding: 10px 15px;
+  overflow: visible;
+}
+.home-ctrl .repos .panel .repo-stats a {
+  color: #333333;
+  display: inline-block;
+}
+.home-ctrl .repos .panel .fa {
+  margin-right: 5px;
 }
 .home-ctrl .repos .panel .stat-value {
   font-size: 0.7857142857142857em;
   font-weight: normal;
-  margin-left: 5px;
 }
 .home-ctrl .repos .panel .tags > ul {
   display: inline-block;
@@ -5439,4 +5453,36 @@ a:hover {
 .home-ctrl .repos .panel .tags > ul > li {
   display: inline-block;
   margin-left: 5px;
+}
+.home-ctrl .repos .panel .repo-links {
+  font-size: 0.7142857142857143em;
+}
+.home-ctrl .repos .panel .repo-links .links {
+  padding: 10px 15px;
+}
+.home-ctrl .repos .panel .repo-links .links h4 {
+  margin: 0 0 10px;
+}
+.home-ctrl .repos .panel .repo-links .links ul {
+  list-style: none;
+  padding-left: 0;
+}
+.home-ctrl .repos .panel .repo-links .links .no-results {
+  color: #999999;
+  font-style: italic;
+  margin-bottom: 0;
+}
+.home-ctrl .repos .panel .repo-links .links .loader {
+  width: 16px;
+  height: 16px;
+  background: url(../images/loader-xs.gif) 0 0 no-repeat transparent;
+  content: "";
+  display: block;
+}
+.home-ctrl .repos .loader {
+  width: 48px;
+  height: 48px;
+  background: url(../images/loader-lg.gif) 0 0 no-repeat transparent;
+  content: "";
+  display: block;
 }

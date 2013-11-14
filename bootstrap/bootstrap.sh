@@ -13,14 +13,17 @@ sudo apt-get update
 sudo apt-get install mongodb-10gen
 
 # --- node.js ---
-sudo apt-get install -y python-software-properties python g++ make
+sudo apt-get install -y python-software-properties
+sudo apt-get install -y python
+sudo apt-get install -y g++
+sudo apt-get install -y make
 sudo add-apt-repository -y ppa:chris-lea/node.js
 sudo apt-get update
 sudo apt-get install -y nodejs
 
 # grunt
-npm install -g grunt-cli
+sudo npm install -g grunt-cli
 
 # local node modules
-cd /vagrant/client && npm install --no-bin-links
-cd /vagrant/server && npm install --no-bin-links
+cd /vagrant/client && sudo npm install
+cd /vagrant/server && sudo npm install

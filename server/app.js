@@ -34,7 +34,9 @@ db.on('open', function() {
 
 var repos = require('./routes/repos')();
 
-app.get('/api/repos', repos.findAll);
+app.get('/api/repos', repos.findRepos);
+app.get('/api/repo/:repo/forks', repos.findForks);
+app.get('/api/repo/:repo/stargazers', repos.findStargazers);
 
 // all other requests are redirected to our index.html file
 

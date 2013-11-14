@@ -1,71 +1,116 @@
 <div class="home-ctrl">
     <div class="container">
-        <div class="col-md-6">
-            <img class="avatar" src="http://www.gravatar.com/avatar/4484acb7484aaf2ee2db4fac2bab274d?s=300" alt="Avatar" />
-            <h1>
-                @Crisu83<br>
-                <small>Christoffer Niska</small>
-            </h1>
-            <p class="about"><b>Hello there</b>. I’m a professional web developer from Finland with a passion for open-source. I consider myself to be a full-stack developer and my tool-belt contains Yii, Twitter Bootstrap, LESS, Composer, Codeception, SourceTree, Git, Travis-CI, Node.js, Grunt, Vagrant and PhpStorm.</p>
-            <ul class="links">
-                <li ng-if="twitterHandle">
-                    <a href="http://twitter.com/{{twitterHandle}}" data-toggle="tooltip" data-placement="bottom" title="Twitter" rel="no-follow" target="_blank"><i class="fa fa-twitter"></i></a>
-                </li>
-                <li ng-if="githubHandle">
-                    <a href="http://github.com/{{githubHandle}}" data-toggle="tooltip" data-placement="bottom" title="GitHub" rel="no-follow" target="_blank"><i class="fa fa-github-alt"></i></a>
-                </li>
-                <li ng-if="bitbucketHandle">
-                    <a href="http://bitbucket.org/{{bitbucketHandle}}" data-toggle="tooltip" data-placement="bottom" title="Bitbucket" rel="no-follow" target="_blank"><i class="fa fa-bitbucket"></i></a>
-                </li>
-                <li ng-if="linkedinHandle">
-                    <a href="http://fi.linkedin.com/in/{{linkedinHandle}}" data-toggle="tooltip" data-placement="bottom" title="Linkedin" rel="no-follow" target="_blank"><i class="fa fa-linkedin"></i></a>
-                </li>
-                <li ng-if="gplusHandle">
-                    <a href="https://plus.google.com/+{{gplusHandle}}" data-toggle="tooltip" data-placement="bottom" title="Google+" rel="no-follow" target="_blank"><i class="fa fa-google-plus"></i></a>
-                </li>
-            </ul>
-        </div>
-        <div class="col-md-6">
-            <ul class="repos">
-                <li ng-repeat="repo in repos">
-                    <div class="panel panel-default">
-                        <div class="panel-body">
-                            <div class="repo-details">
-                                <h3>
-                                    <a href="{{repo.url}}" rel="no-follow" target="_blank">{{ repo.name }}</a>
-                                    <small class="owner"><a href="{{repo.owner.url}}" rel="no-follow" target="_blank">@{{ repo.owner.name }}</a></small>
-                                </h3>
-                                <p class="description">{{ repo.description }}</p>
-                            </div>
-                            <hr/>
-                            <div class="repo-stats">
-                                <div class="col-xs-2">
-                                    <div class="watchers"><i class="fa fa-eye"></i> <b class="stat-value">{{ repo.num_watchers }}</b></div>
-                                </div>
-                                <div class="col-xs-2">
-                                    <div class="forks"><i class="fa fa-code-fork"></i> <b class="stat-value">{{ repo.num_forks }}</b></div>
-                                </div>
-                                <div class="col-xs-2">
-                                    <div class="open-issues"><i class="fa fa-exclamation-circle"></i> <b class="stat-value">{{ repo.num_open_issues }}</b></div>
-                                </div>
-                                <div class="col-xs-2">
-                                    <div class="loc"><i class="fa fa-reorder"></i> <b class="stat-value">{{ repo.num_lines }}</b></div>
-                                </div>
-                                <div class="col-xs-4" ng-if="repo.tags.length">
-                                    <div class="tags">
-                                        <i class="fa fa-tag"></i>
-                                        <ul>
-                                            <li ng-repeat="tag in repo.tags">
-                                                {{tag}}
-                                            </li>
-                                        </ul>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-6">
+                        <img class="avatar" src="{{avatarSrc}}" alt="Avatar" />
+                    </div>
+                </div>
+                <h1>@Crisu83 <small>Christoffer Niska</small></h1>
+                <p class="about"><b>Hello there</b>. I’m a professional web developer from Finland with a passion for open-source. I consider myself to be a full-stack developer and my tool-belt contains Yii, Twitter Bootstrap, LESS, Composer, Codeception, SourceTree, Git, Travis-CI, Node.js, Grunt, Vagrant and PhpStorm.</p>
+                <ul class="links">
+                    <li ng-if="twitterHandle">
+                        <a href="http://twitter.com/{{twitterHandle}}" data-toggle="tooltip" data-placement="bottom" title="Twitter" rel="nofollow" target="_blank"><i class="fa fa-twitter"></i></a>
+                    </li>
+                    <li ng-if="githubHandle">
+                        <a href="http://github.com/{{githubHandle}}" data-toggle="tooltip" data-placement="bottom" title="GitHub" rel="nofollow" target="_blank"><i class="fa fa-github-alt"></i></a>
+                    </li>
+                    <li ng-if="bitbucketHandle">
+                        <a href="http://bitbucket.org/{{bitbucketHandle}}" data-toggle="tooltip" data-placement="bottom" title="Bitbucket" rel="nofollow" target="_blank"><i class="fa fa-bitbucket"></i></a>
+                    </li>
+                    <li ng-if="linkedinHandle">
+                        <a href="http://fi.linkedin.com/in/{{linkedinHandle}}" data-toggle="tooltip" data-placement="bottom" title="Linkedin" rel="nofollow" target="_blank"><i class="fa fa-linkedin"></i></a>
+                    </li>
+                    <li ng-if="gplusHandle">
+                        <a href="https://plus.google.com/+{{gplusHandle}}" data-toggle="tooltip" data-placement="bottom" title="Google+" rel="nofollow" target="_blank"><i class="fa fa-google-plus"></i></a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-6" ng-cloak>
+                <div class="repos">
+                    <ul>
+                        <li ng-repeat="repo in repos">
+                            <div class="panel panel-default" ng-mouseenter="showForksAndStargazers()" ng-mouseleave="hideForksAndStargazers()">
+                                <div class="panel-body">
+                                    <div class="repo-details">
+                                        <h3>
+                                            <a href="{{repo.url}}" rel="nofollow" target="_blank">{{ repo.name }}</a>
+                                            <small class="owner"><a href="{{repo.owner_url}}" rel="nofollow" target="_blank">@{{ repo.owner_name }}</a></small>
+                                        </h3>
+                                        <p class="description">{{ repo.description }}</p>
+                                    </div>
+                                    <hr/>
+                                    <div class="repo-stats">
+                                        <div class="row">
+                                            <div class="col-xs-2">
+                                                <a href="#" class="forks" title="Forks" data-placement="right" data-toggle="tooltip">
+                                                    <i class="fa fa-code-fork"></i> <b class="stat-value">{{ repo.num_forks }}</b>
+                                                </a>
+                                            </div>
+                                            <div class="col-xs-2">
+                                                <a href="#" class="watchers" title="Watchers" data-placement="right" data-toggle="tooltip">
+                                                    <i class="fa fa-eye"></i> <b class="stat-value">{{ repo.num_watchers }}</b>
+                                                </a>
+                                            </div>
+                                            <div class="col-xs-2">
+                                                <a href="#" class="open-issues" title="Issues" data-placement="right" data-toggle="tooltip">
+                                                    <i class="fa fa-exclamation-circle"></i> <b class="stat-value">{{ repo.num_issues }}</b>
+                                                </a>
+                                            </div>
+                                            <div class="col-xs-2">
+                                                <a href="#" class="loc" title="LOC" data-placement="right" data-toggle="tooltip">
+                                                    <i class="fa fa-reorder"></i> <b class="stat-value">{{ repo.num_lines }}</b>
+                                                </a>
+                                            </div>
+                                            <div class="col-xs-4" ng-if="repo.tags.length">
+                                                <div class="tags">
+                                                    <i class="fa fa-tag"></i>
+                                                    <ul>
+                                                        <li ng-repeat="tag in repo.tags">
+                                                            {{tag}}
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="repo-links" ng-show="activeRepo == repo.name">
+                                        <hr/>
+                                        <div class="row">
+                                            <div class="col-xs-6">
+                                                <div class="links">
+                                                    <h4><i class="fa fa-code-fork"></i> Forks</h4>
+                                                    <ul ng-if="repo.forks.length > 0">
+                                                        <li ng-repeat="fork in repo.forks">
+                                                            <a href="{{fork.url}}" target="_blank" rel="nofollow">{{fork.full_name}}</a>
+                                                        </li>
+                                                    </ul>
+                                                    <p class="no-results" ng-if="repo.forks.length == 0">No forks available.</p>
+                                                    <div class="loader" ng-show="loadingForks"></div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-6">
+                                                <div class="links">
+                                                    <h4><i class="fa fa-star"></i> Stargazers</h4>
+                                                    <ul ng-if="repo.stargazers.length > 0">
+                                                        <li ng-repeat="stargazer in repo.stargazers">
+                                                            <a href="{{stargazer.url}}" target="_blank" rel="nofollow">{{stargazer.name}}</a>
+                                                        </li>
+                                                    </ul>
+                                                    <p class="no-results" ng-if="repo.stargazers.length == 0">No stargazers available.</p>
+                                                    <div class="loader" ng-show="loadingStargazers"></div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </li>
-            </ul>
+                        </li>
+                    </ul>
+                    <div class="loader" ng-show="loading"></div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

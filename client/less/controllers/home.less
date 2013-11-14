@@ -3,14 +3,21 @@
     border-radius: 5px;
     display: block;
     margin: 20px 0;
+    max-width: 300px;
+    width: 100%;
   }
 
   h1 {
     .font-size-px(50px);
 
     > small {
+      .font-size-px(8px);
       color: @gray-light;
     }
+  }
+
+  .tooltip {
+    z-index: 9999;
   }
 
   .about {
@@ -25,7 +32,7 @@
 
     > li {
       display: inline-block;
-      margin-right: 10px;
+      margin-right: 15px;
 
       a {
         .font-size-px(40px);
@@ -39,9 +46,12 @@
   }
 
   .repos {
-    list-style: none;
     margin: 20px 0;
-    padding-left: 0;
+
+    > ul {
+      list-style: none;
+      padding-left: 0;
+    }
 
     .panel {
       .box-shadow(0 0 4px rgba(0,0,0,0.15));
@@ -86,14 +96,22 @@
       }
 
       .repo-stats {
-        margin: 10px 0;
-        overflow: hidden;
+        padding: 10px 15px;
+        overflow: visible;
+
+        a {
+          color: @text-color;
+          display: inline-block;
+        }
+      }
+
+      .fa {
+        margin-right: 5px;
       }
 
       .stat-value {
         .font-size-px(11px);
         font-weight: normal;
-        margin-left: 5px;
       }
 
       .tags {
@@ -109,6 +127,43 @@
           }
         }
       }
+
+      .repo-links {
+        .font-size-px(10px);
+
+        .links {
+          padding: 10px 15px;
+
+          h4 {
+            margin: 0 0 10px;
+          }
+
+          ul {
+            list-style: none;
+            padding-left: 0;
+          }
+
+          .no-results {
+            color: @gray-light;
+            font-style: italic;
+            margin-bottom: 0;
+          }
+
+          .loader {
+            .square(16px);
+            background: url(../images/loader-xs.gif) 0 0 no-repeat transparent;
+            content: "";
+            display: block;
+          }
+        }
+      }
+    }
+
+    .loader {
+      .square(48px);
+      background: url(../images/loader-lg.gif) 0 0 no-repeat transparent;
+      content: "";
+      display: block;
     }
   }
 }
