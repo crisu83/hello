@@ -5455,7 +5455,7 @@ a:hover {
   margin-left: 5px;
 }
 .home-ctrl .repos .panel .repo-links {
-  font-size: 0.7142857142857143em;
+  font-size: 0.8571428571428571em;
 }
 .home-ctrl .repos .panel .repo-links .links {
   padding: 10px 15px;
@@ -5465,12 +5465,22 @@ a:hover {
 }
 .home-ctrl .repos .panel .repo-links .links ul {
   list-style: none;
+  margin: -3px 0 0 -3px;
   padding-left: 0;
+}
+.home-ctrl .repos .panel .repo-links .links ul li {
+  display: inline-block;
+  margin: 3px 0 0 3px;
+}
+.home-ctrl .repos .panel .repo-links .links ul li img {
+  width: 32px;
+  height: 32px;
+  border-radius: 2px;
 }
 .home-ctrl .repos .panel .repo-links .links .no-results {
   color: #999999;
   font-style: italic;
-  margin-bottom: 0;
+  margin: 15px 0 0;
 }
 .home-ctrl .repos .panel .repo-links .links .loader {
   width: 16px;

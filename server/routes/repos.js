@@ -10,6 +10,16 @@ var mongoose = require('mongoose'),
  */
 var repos = function(params) {
 
+    /*
+    if (!config.githubClientId) {
+        throw new Error('Configuration paramter "githubClientId" must be set.');
+    }
+
+    if (!config.githubClientSecret) {
+        throw new Error('Configuration paramter "githubClientSecret" must be set.');
+    }
+    */
+
     if (!config.githubHandle) {
         throw new Error('Configuration paramter "githubHandle" must be set.');
     }
@@ -17,6 +27,18 @@ var repos = function(params) {
     if (!config.cacheDuration && config.cacheDuration !== 0) {
         throw new Error('Configuration paramter "cacheDuration" must be set.');
     }
+
+    var authorize = function(clientId, clientSecret) {
+        github.api('authorizations/clients/' + clientId , function(data) {
+            console.log(data);
+        }, 'PUT', {
+            client_secret: clientSecret,
+            scopes: [
+                'public_repo'
+            ],
+            note: 'api'
+        });
+    };
 
     // Repository schema.
     var repoSchema = mongoose.Schema({
@@ -27,7 +49,7 @@ var repos = function(params) {
         url: String,
         owner_name: String,
         owner_url: String,
-        owner_gravatar_id: String,
+        owner_avatar_url: String,
         num_watchers: Number,
         num_forks: Number,
         num_issues: Number,
@@ -47,7 +69,7 @@ var repos = function(params) {
         name: String,
         url: String,
         repo_name: String,
-        gravatar_id: String,
+        avatar_url: String,
         created_at: Date
     });
 
@@ -72,11 +94,12 @@ var repos = function(params) {
             url: data.html_url,
             owner_name: data.owner.login,
             owner_url: data.owner.html_url,
-            owner_gravatar_id: data.owner.gravatar_id,
+            owner_avatar_url: data.owner.avatar_url,
             num_watchers: data.watchers_count,
             num_forks: data.forks_count,
             num_issues: data.open_issues_count,
             num_lines: data.size,
+            tags: tags,
             gh_updated_at: data.updated_at,
             gh_created_at: data.created_at,
             gh_pushed_at: data.pushed_at,
@@ -95,40 +118,7 @@ var repos = function(params) {
     };
 
     /**
-     * Fetches repositiory data from storage or GitHub if necessary.
-     * @param {string} ownerName
-     * @param {function} callback
-     */
-    var fetchRepos = function(ownerName, callback) {
-        github.api('/users/' + ownerName + '/repos', function(data) {
-            data = JSON.parse(data);
-            for (var i = 0, l = data.length; i < l; i++) {
-                upsertRepo(data[i], false);
-            }
-            console.log('repositiories synchronized.');
-            callback();
-        });
-    };
-
-    /**
-     * Fetches fork data from storage or GitHub if necessary.
-     * @param {string} ownerName
-     * @param {string} repoName
-     * @param {function} callback
-     */
-    var fetchForks = function(ownerName, repoName, callback) {
-        github.api('/repos/' + ownerName + '/' + repoName + '/forks', function(data) {
-            data = JSON.parse(data);
-            for (var i = 0, l = data.length; i < l; i++) {
-                upsertRepo(data[i], true);
-            }
-            console.log('forks for repo "' + repoName + '" synchronized.');
-            callback();
-        });
-    };
-
-    /**
-     * Creates or updates an user with the given data.
+     * Creates or updates a stargazer with the given data.
      * @param {Object} data
      * @param {string} repoName
      */
@@ -138,7 +128,7 @@ var repos = function(params) {
             name: data.login,
             url: data.html_url,
             repo_name: repoName,
-            gravatar_id: data.gravatar_id,
+            avatar_url: data.avatar_url,
             created_at: now
         };
         Stargazer.findOneAndUpdate({
@@ -153,25 +143,15 @@ var repos = function(params) {
         });
     };
 
-    /**
-     * Fetches stargazer data from storage or GitHub if necessary.
-     * @param {string} ownerName
-     * @param {string} repoName
-     * @param {function} callback
-     */
-    var fetchStargazers = function(ownerName, repoName, callback) {
-        // Synchronize if necessary.
-        github.api('/repos/' + ownerName + '/' + repoName + '/stargazers', function(data) {
-            data = JSON.parse(data);
-            for (var i = 0, l = data.length; i < l; i++) {
-                upsertStargazer(data[i], repoName);
-            }
-            console.log('stargazers for repo "' + repoName + '" synchronized.');
-            callback();
-        });
-    };
-
     return {
+        /**
+         *
+         * @param req
+         * @param res
+         */
+        authenticate: function(req, res) {
+
+        },
         /**
          * Lists all repositories.
          * @param req
@@ -179,7 +159,8 @@ var repos = function(params) {
          */
         findRepos: function(req, res) {
             var ownerName = config.githubHandle;
-            fetchRepos(ownerName, function() {
+
+            var fetch = function(callback) {
                 Repo.find({
                     owner_name: ownerName,
                     fork: false
@@ -187,9 +168,33 @@ var repos = function(params) {
                     if (err) {
                         console.log('error: ' + err);
                     } else {
-                        res.send(repos);
+                        callback(repos);
                     }
                 });
+            };
+
+            var sync = function(callback) {
+                github.api('/users/' + ownerName + '/repos', function(data) {
+                    for (var i = 0, l = data.length; i < l; i++) {
+                        upsertRepo(data[i], false);
+                    }
+                    callback();
+                });
+            };
+
+            fetch(function(repos) {
+                var expiresAt = new Date(new Date().getTime() - config.cacheDuration);
+                if (!repos.length || (repos[0].created_at <= expiresAt)) {
+                    console.log('synchronzing repositories from github.');
+                    sync(function() {
+                        fetch(function(repos) {
+                            res.send(repos);
+                        });
+                    });
+                } else {
+                    console.log('repositiories fetched from cache (expires at ' + expiresAt + ').');
+                    res.send(repos);
+                }
             });
         },
         /**
@@ -203,17 +208,42 @@ var repos = function(params) {
             }
             var ownerName = config.githubHandle,
                 repoName = req.params.repo;
-            fetchForks(ownerName, repoName, function() {
+
+            var fetch = function(callback) {
                 Repo.find({
                     name: repoName,
                     fork: true
-                }, function(err, forks) {
+                }, function(err, repos) {
                     if (err) {
                         console.log('error: ' + err);
                     } else {
-                        res.send(forks);
+                        callback(repos);
                     }
                 });
+            };
+
+            var sync = function(callback) {
+                github.api('/repos/' + ownerName + '/' + repoName + '/forks', function(data) {
+                    for (var i = 0, l = data.length; i < l; i++) {
+                        upsertRepo(data[i], true);
+                    }
+                    callback();
+                });
+            };
+
+            fetch(function(repos) {
+                var expiresAt = new Date(new Date().getTime() - config.cacheDuration);
+                if (!repos.length || (repos[0].created_at <= expiresAt)) {
+                    console.log('synchronizing forks for repo "' + repoName + '" from github.');
+                    sync(function() {
+                        fetch(function(repos) {
+                            res.send(repos);
+                        });
+                    });
+                } else {
+                    console.log('forks for repo "' + repoName + '" fetched from cache (expires at ' + expiresAt + ').');
+                    res.send(repos);
+                }
             });
         },
         /**
@@ -225,18 +255,44 @@ var repos = function(params) {
             if (!req.params.repo) {
                 throw new Error('Request parameter "repo" must be given.');
             }
+
             var ownerName = config.githubHandle,
                 repoName = req.params.repo;
-            fetchStargazers(ownerName, repoName, function() {
+
+            var fetch = function(callback) {
                 Stargazer.find({
                     repo_name: repoName
-                }, function(err, stargazers) {
+                }, function(err, repos) {
                     if (err) {
                         console.log('error: ' + err);
                     } else {
-                        res.send(stargazers);
+                        callback(repos);
                     }
                 });
+            };
+
+            var sync = function(callback) {
+                github.api('/repos/' + ownerName + '/' + repoName + '/stargazers', function(data) {
+                    for (var i = 0, l = data.length; i < l; i++) {
+                        upsertStargazer(data[i], repoName);
+                    }
+                    callback();
+                });
+            };
+
+            fetch(function(stargazers) {
+                var expiresAt = new Date(new Date().getTime() - config.cacheDuration);
+                if (!stargazers.length || (stargazers[0].created_at <= expiresAt)) {
+                    console.log('synchronizing stargazers for repo "' + repoName + '".');
+                    sync(function() {
+                        fetch(function(repos) {
+                            res.send(repos);
+                        });
+                    });
+                } else {
+                    console.log('stargazers for repo "' + repoName + '" fetched from cache (expires at ' + expiresAt + ').');
+                    res.send(stargazers);
+                }
             });
         }
     };

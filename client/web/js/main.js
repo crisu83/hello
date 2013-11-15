@@ -80,9 +80,10 @@ angular.module('App').controller('HomeCtrl', ['$scope', '$http', function($scope
                 url: 'api/repo/' + repoName + '/forks'
             })
             .success(function(data) {
-                data.sort(sortRepos);
+                //data.sort(sortRepos);
                 $scope.repos[i].forks = data;
                 $scope.loadingForks = false;
+                bindTooltip();
             })
             .error(function() {
                 throw new Error('Request failed.');
@@ -95,9 +96,10 @@ angular.module('App').controller('HomeCtrl', ['$scope', '$http', function($scope
                 url: 'api/repo/' + repoName + '/stargazers'
             })
             .success(function(data) {
-                data.sort(sortStargazers);
+                //data.sort(sortStargazers);
                 $scope.repos[i].stargazers = data;
                 $scope.loadingStargazers = false;
+                bindTooltip();
             })
             .error(function() {
                 throw new Error('Request failed.');

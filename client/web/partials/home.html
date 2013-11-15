@@ -83,7 +83,9 @@
                                                     <h4><i class="fa fa-code-fork"></i> Forks</h4>
                                                     <ul ng-if="repo.forks.length > 0">
                                                         <li ng-repeat="fork in repo.forks">
-                                                            <a href="{{fork.url}}" target="_blank" rel="nofollow">{{fork.full_name}}</a>
+                                                            <a href="{{fork.url}}" title="{{fork.owner_name}}" target="_blank" rel="nofollow" data-placement="bottom" data-toggle="tooltip">
+                                                                <img src="{{fork.owner_avatar_url}}" />
+                                                            </a>
                                                         </li>
                                                     </ul>
                                                     <p class="no-results" ng-if="repo.forks.length == 0">No forks available.</p>
@@ -95,7 +97,9 @@
                                                     <h4><i class="fa fa-star"></i> Stargazers</h4>
                                                     <ul ng-if="repo.stargazers.length > 0">
                                                         <li ng-repeat="stargazer in repo.stargazers">
-                                                            <a href="{{stargazer.url}}" target="_blank" rel="nofollow">{{stargazer.name}}</a>
+                                                            <a href="{{stargazer.url}}" title="{{stargazer.name}}" target="_blank" rel="nofollow" data-placement="bottom" data-toggle="tooltip">
+                                                                <img src="{{stargazer.avatar_url}}" />
+                                                            </a>
                                                         </li>
                                                     </ul>
                                                     <p class="no-results" ng-if="repo.stargazers.length == 0">No stargazers available.</p>
