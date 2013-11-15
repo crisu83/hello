@@ -28,6 +28,7 @@ var repos = function(params) {
         throw new Error('Configuration paramter "cacheDuration" must be set.');
     }
 
+    /*
     var authorize = function(clientId, clientSecret) {
         github.api('authorizations/clients/' + clientId , function(data) {
             console.log(data);
@@ -39,6 +40,7 @@ var repos = function(params) {
             note: 'api'
         });
     };
+    */
 
     // Repository schema.
     var repoSchema = mongoose.Schema({
@@ -107,7 +109,7 @@ var repos = function(params) {
         };
         Repo.findOneAndUpdate({
             full_name: attrs.full_name,
-            fork: false
+            fork: fork
         }, attrs, {upsert: true}, function(err, repo) {
             if (err) {
                 console.log('error: ' + err);
