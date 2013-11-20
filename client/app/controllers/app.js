@@ -16,8 +16,8 @@ angular.module('Hello').controller('AppCtrl', ['$scope', 'api', function($scope,
     api.profile()
         .success(function(profile) {
             $scope.gravatarId = profile.gravatar_id;
-            $scope.fullName = profile.full_name;
-            $scope.pageTitle = $scope.githubLogin + ' (' + $scope.fullName + ') · Portfolio';
+            $scope.fullName   = profile.full_name;
+            $scope.pageTitle  = $scope.githubLogin + ' (' + $scope.fullName + ') · Portfolio';
         })
         .error(function() {
             console.log('request failed');

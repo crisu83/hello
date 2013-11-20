@@ -14,10 +14,10 @@ app.configure('production', function(){
     app.use(express.errorHandler());
 });
 
-// we server static files under /static
+// we serve static files under /static
 app.use('/static', express.static(config.webRoot));
 
-// connect to mongodb using mongoose
+// connect to mongodb
 mongoose.connect('mongodb://localhost/hello');
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error: '));

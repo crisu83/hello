@@ -80,6 +80,7 @@ var repos = function(params) {
             gh_updated_at: data.updated_at,
             gh_created_at: data.created_at,
             gh_pushed_at: data.pushed_at,
+            visible: true,
             created_at: new Date()
         }/* attrs */);
     };
