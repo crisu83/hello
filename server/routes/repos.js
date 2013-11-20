@@ -1,46 +1,23 @@
 var mongoose = require('mongoose'),
-    https    = require('https'),
+    Q        = require('q'),
+    helper   = require('../helpers/mongoose_helper.js'),
     app      = require('../app.js'),
-    github   = require('../github.js')(),
     config   = require('../config.js');
 
 /**
  * Repository route.
- * @param params
+ * @param {Object} params
+ * @returns {Object}
  */
 var repos = function(params) {
 
-    /*
-    if (!config.githubClientId) {
-        throw new Error('Configuration paramter "githubClientId" must be set.');
-    }
-
-    if (!config.githubClientSecret) {
-        throw new Error('Configuration paramter "githubClientSecret" must be set.');
-    }
-    */
-
-    if (!config.githubHandle) {
-        throw new Error('Configuration paramter "githubHandle" must be set.');
+    if (!config.github.login) {
+        throw new Error('Configuration paramter "github.login" must be set.');
     }
 
     if (!config.cacheDuration && config.cacheDuration !== 0) {
         throw new Error('Configuration paramter "cacheDuration" must be set.');
     }
-
-    /*
-    var authorize = function(clientId, clientSecret) {
-        github.api('authorizations/clients/' + clientId , function(data) {
-            console.log(data);
-        }, 'PUT', {
-            client_secret: clientSecret,
-            scopes: [
-                'public_repo'
-            ],
-            note: 'api'
-        });
-    };
-    */
 
     // Repository schema.
     var repoSchema = mongoose.Schema({
@@ -55,11 +32,12 @@ var repos = function(params) {
         num_watchers: Number,
         num_forks: Number,
         num_issues: Number,
-        num_lines: Number,
+        sizs: Number,
         tags: Array,
         gh_updated_at: Date,
         gh_created_at: Date,
         gh_pushed_at: Date,
+        visible: Boolean,
         created_at: Date
     });
 
@@ -78,21 +56,19 @@ var repos = function(params) {
     var Stargazer = mongoose.model('Stargazer', stargazerSchema);
 
     /**
-     * Creates or updates a repository with the given data.
+     * Creates or updates a repository.
      * @param {Object} data
-     * @param {boolean} fork
+     * @returns {promise}
      */
-    var upsertRepo = function(data, fork) {
-        var tags = [],
-            now = new Date();
-        if (!fork && data.language) {
-            tags.push(data.language);
-        }
-        var attrs = {
+    var upsertRepo = function(data) {
+        return helper.upsert(Repo, {
+            name: data.name,
+            owner_name: data.owner.login
+        }/* conds */, {
             name: data.name,
             full_name: data.full_name,
             description: data.description,
-            fork: fork,
+            fork: data.fork,
             url: data.html_url,
             owner_name: data.owner.login,
             owner_url: data.owner.html_url,
@@ -100,51 +76,24 @@ var repos = function(params) {
             num_watchers: data.watchers_count,
             num_forks: data.forks_count,
             num_issues: data.open_issues_count,
-            num_lines: data.size,
-            tags: tags,
+            size: data.size,
             gh_updated_at: data.updated_at,
             gh_created_at: data.created_at,
             gh_pushed_at: data.pushed_at,
-            created_at: now
-        };
-        Repo.findOneAndUpdate({
-            full_name: attrs.full_name,
-            fork: fork
-        }, attrs, {upsert: true}, function(err, repo) {
-            if (err) {
-                console.log('error: ' + err);
-            } else {
-                console.log('create or update repo "' + repo.full_name + '"');
-            }
-        });
+            created_at: new Date()
+        }/* attrs */);
     };
 
     /**
-     * Creates or updates a stargazer with the given data.
+     * Creates or updates all stargazers for a repository.
      * @param {Object} data
-     * @param {string} repoName
+     * @returns {promise}
      */
-    var upsertStargazer = function(data, repoName) {
-        var now = new Date();
-        var attrs = {
-            name: data.login,
-            url: data.html_url,
-            repo_name: repoName,
-            avatar_url: data.avatar_url,
-            created_at: now
-        };
-        Stargazer.findOneAndUpdate({
-            name: attrs.name,
-            repo_name: attrs.repo_name
-        }, attrs, {upsert: true}, function(err, stargazer) {
-            if (err) {
-                console.log('error: ' + err);
-            } else {
-                console.log('create or update stargazer "' + stargazer.name + '"');
-            }
-        });
+    var upsertRepos = function(data) {
+        return helper.upsertAll(upsertRepo, data);
     };
 
+    // Exposed methods.
     return {
         /**
          *
@@ -160,44 +109,54 @@ var repos = function(params) {
          * @param res
          */
         findRepos: function(req, res) {
-            var ownerName = config.githubHandle;
+            var ownerName = config.github.login;
 
-            var fetch = function(callback) {
-                Repo.find({
+            /**
+             * Fetches all repositories.
+             * @returns {promise}
+             */
+            var find = function() {
+                return helper.find(Repo, {
                     owner_name: ownerName,
                     fork: false
-                }, function(err, repos) {
-                    if (err) {
-                        console.log('error: ' + err);
-                    } else {
-                        callback(repos);
-                    }
                 });
             };
 
-            var sync = function(callback) {
-                github.api('/users/' + ownerName + '/repos', function(data) {
-                    for (var i = 0, l = data.length; i < l; i++) {
-                        upsertRepo(data[i], false);
-                    }
-                    callback();
-                });
-            };
-
-            fetch(function(repos) {
-                var expiresAt = new Date(new Date().getTime() - config.cacheDuration);
-                if (!repos.length || (repos[0].created_at <= expiresAt)) {
-                    console.log('synchronzing repositories from github.');
-                    sync(function() {
-                        fetch(function(repos) {
-                            res.send(repos);
-                        });
-                    });
+            /**
+             * Checks if repository models have expired and fetches new data from github if necessary.
+             * @param {Array} repos
+             * @returns {promise}
+             */
+            var checkExpired = function(repos) {
+                var deferred = Q.defer(),
+                    nowTime = new Date().getTime(),
+                    expiresAt = new Date(nowTime - config.cacheDuration);
+                if (repos.length && (repos[0].created_at > expiresAt)) {
+                    console.log('repositories for user "' + ownerName + '" finded from cache (expires at ' + expiresAt + ').');
+                    deferred.resolve(repos);
                 } else {
-                    console.log('repositiories fetched from cache (expires at ' + expiresAt + ').');
-                    res.send(repos);
+                    console.log('synchronizing repositories for user "' + ownerName + '".');
+                    params.github.repos(ownerName)
+                        .then(upsertRepos)
+                        .then(find)
+                        .then(function(repos) {
+                            deferred.resolve(repos);
+                        }, function(err) {
+                            deferred.reject(err);
+                        });
                 }
-            });
+                return deferred.promise;
+            };
+
+            // Fetch all repositories, synchronize from github if the cached models have expired
+            // and send the repositories through the response object.
+            find()
+                .then(checkExpired)
+                .then(function(repos) {
+                    res.send(repos);
+                }, function(err) {
+                    console.log('error: ' + err);
+                });
         },
         /**
          * Lists all repositories.
@@ -208,45 +167,56 @@ var repos = function(params) {
             if (!req.params.repo) {
                 throw new Error('Request parameter "repo" must be given.');
             }
-            var ownerName = config.githubHandle,
+
+            var ownerName = config.github.login,
                 repoName = req.params.repo;
 
-            var fetch = function(callback) {
-                Repo.find({
+            /**
+             * Fetches all forks for a repository.
+             * @returns {promise}
+             */
+            var find = function() {
+                return helper.find(Repo, {
                     name: repoName,
                     fork: true
-                }, function(err, repos) {
-                    if (err) {
-                        console.log('error: ' + err);
-                    } else {
-                        callback(repos);
-                    }
                 });
             };
 
-            var sync = function(callback) {
-                github.api('/repos/' + ownerName + '/' + repoName + '/forks', function(data) {
-                    for (var i = 0, l = data.length; i < l; i++) {
-                        upsertRepo(data[i], true);
-                    }
-                    callback();
-                });
-            };
-
-            fetch(function(repos) {
-                var expiresAt = new Date(new Date().getTime() - config.cacheDuration);
-                if (!repos.length || (repos[0].created_at <= expiresAt)) {
-                    console.log('synchronizing forks for repo "' + repoName + '" from github.');
-                    sync(function() {
-                        fetch(function(repos) {
-                            res.send(repos);
-                        });
-                    });
+            /**
+             * Checks if fork models have expired and fetches new data from github if necessary.
+             * @param {Array} forks
+             * @returns {promise}
+             */
+            var checkExpired = function(forks) {
+                var deferred = Q.defer(),
+                    nowTime = new Date().getTime(),
+                    expiresAt = new Date(nowTime - config.cacheDuration);
+                if (forks.length && (forks[0].created_at > expiresAt)) {
+                    console.log('forks for repository "' + repoName + '" fetched from cache (expires at ' + expiresAt + ').');
+                    deferred.resolve(forks);
                 } else {
-                    console.log('forks for repo "' + repoName + '" fetched from cache (expires at ' + expiresAt + ').');
-                    res.send(repos);
+                    console.log('synchronizing forks for repository "' + repoName + '".');
+                    params.github.forks(ownerName, repoName)
+                        .then(upsertRepos)
+                        .then(find)
+                        .then(function(forks) {
+                            deferred.resolve(forks);
+                        }, function(err) {
+                            deferred.reject(err);
+                        });
                 }
-            });
+                return deferred.promise;
+            };
+
+            // Fetch all forks, synchronize from github if the cached models have expired
+            // and send the forks through the response object.
+            find()
+                .then(checkExpired)
+                .then(function(forks) {
+                    res.send(forks);
+                }, function(err) {
+                    console.log('error: ' + err);
+                });
         },
         /**
          * Lists all stargazers.
@@ -258,44 +228,81 @@ var repos = function(params) {
                 throw new Error('Request parameter "repo" must be given.');
             }
 
-            var ownerName = config.githubHandle,
+            var ownerName = config.github.login,
                 repoName = req.params.repo;
 
-            var fetch = function(callback) {
-                Stargazer.find({
+            /**
+             * Fetches all stargazers for a repository.
+             * @returns {promise}
+             */
+            var find = function() {
+                return helper.find(Stargazer, {
                     repo_name: repoName
-                }, function(err, repos) {
-                    if (err) {
-                        console.log('error: ' + err);
-                    } else {
-                        callback(repos);
-                    }
                 });
             };
 
-            var sync = function(callback) {
-                github.api('/repos/' + ownerName + '/' + repoName + '/stargazers', function(data) {
-                    for (var i = 0, l = data.length; i < l; i++) {
-                        upsertStargazer(data[i], repoName);
-                    }
-                    callback();
-                });
+            /**
+             * Creates or updates a stargazer.
+             * @param {Object} data
+             * @returns {promise}
+             */
+            var upsert = function(data) {
+                return helper.upsert(Stargazer, {
+                    name: data.login,
+                    repo_name: repoName
+                }/* conds */, {
+                    name: data.login,
+                    url: data.html_url,
+                    repo_name: repoName,
+                    avatar_url: data.avatar_url,
+                    created_at: new Date()
+                }/* attrs */);
             };
 
-            fetch(function(stargazers) {
-                var expiresAt = new Date(new Date().getTime() - config.cacheDuration);
-                if (!stargazers.length || (stargazers[0].created_at <= expiresAt)) {
-                    console.log('synchronizing stargazers for repo "' + repoName + '".');
-                    sync(function() {
-                        fetch(function(repos) {
-                            res.send(repos);
-                        });
-                    });
+            /**
+             * Creates or updates stargazers for a repository.
+             * @param {Object} data
+             * @returns {promise}
+             */
+            var upsertAll = function(data) {
+                return helper.upsertAll(upsert, data);
+            };
+
+            /**
+             * Checks if stargazer models have expired and fetches new data from github if necessary.
+             * @param {Array} stargazers
+             * @returns {promise}
+             */
+            var checkExpired = function(stargazers) {
+                var deferred = Q.defer(),
+                    nowTime = new Date().getTime(),
+                    expiresAt = new Date(nowTime - config.cacheDuration);
+                if (stargazers.length && (stargazers[0].created_at > expiresAt)) {
+                    console.log('stargazers for repository "' + repoName + '" finded from cache (expires at ' + expiresAt + ').');
+                    deferred.resolve(stargazers);
                 } else {
-                    console.log('stargazers for repo "' + repoName + '" fetched from cache (expires at ' + expiresAt + ').');
-                    res.send(stargazers);
+                    console.log('synchronizing stargazers for repository "' + repoName + '".');
+                    params.github.stargazers(ownerName, repoName)
+                        .then(upsertAll)
+                        .then(find)
+                        .then(function(stargazers) {
+                            deferred.resolve(stargazers);
+                        }, function(err) {
+                            deferred.reject(err);
+                        });
                 }
-            });
+                return deferred.promise;
+            };
+
+            // Fetch all stargazers, synchronize from github if the cached models have expired
+            // and send the stargazers through the response object.
+            find()
+                .then(checkExpired)
+                .then(function(stargazers) {
+                    res.send(stargazers);
+                }, function(err) {
+                    console.log('error: ' + err);
+                });
         }
     };
 };

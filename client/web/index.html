@@ -1,20 +1,27 @@
-<!DOCTYPE html>
+<!doctype html>
+<html ng-app="Hello" ng-controller="AppCtrl">
 <head>
     <meta charset="utf-8"/>
-    <title>Crisu83 (Christoffer Niska) · Portfolio</title>
+    <title ng-bind="pageTitle">hello.js</title>
     <meta name="viewport" content="width=device-width"/>
-    <link rel="stylesheet" href="static/css/main.css"/>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js""></script>
+    <link rel="stylesheet" href="static/css/main.css" />
+    <link rel="stylesheet" href="static/css/lib/gh-fork-ribbon.css" />
 </head>
-<body ng-app="App" ng-controller="AppCtrl">
+<body>
 
 <div class="container">
     <div ui-view></div>
 </div>
 
-<script src="https://code.jquery.com/jquery.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.1.5/angular.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.1.5/angular-resource.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.0.1/angular-ui-router.js"></script>
+<div class="github-fork-ribbon-wrapper right">
+    <div class="github-fork-ribbon">
+        <a href="https://github.com/Crisu83/hello" rel="nofollow" target="_blank">Fork me on GitHub</a>
+    </div>
+</div>
+
+<script src="static/js/lib/angular.js"></script>
+<script src="static/js/lib/angular-ui-router.js"></script>
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.1/js/bootstrap.min.js"></script>
 <script src="static/js/main.js"></script>
 

@@ -1,18 +1,8 @@
-angular.module('App').controller('HomeCtrl', ['$scope', '$http', function($scope, $http) {
+// home controller
+angular.module('Hello').controller('HomeCtrl', ['$scope', 'api', function($scope, api) {
 
-    $scope.avatarSrc = 'http://www.gravatar.com/avatar/4484acb7484aaf2ee2db4fac2bab274d?s=300';
-    $scope.githubHandle = 'Crisu83';
-    $scope.twitterHandle = 'Crisu83';
-    $scope.bitbucketHandle = 'Crisu83';
-    $scope.linkedinHandle = 'crisu83';
-    $scope.gplusHandle = 'ChristofferNiska';
     $scope.loading = false;
-    $scope.loadingForks = false;
-    $scope.loadingStargazers = false;
 
-    $scope.repos = [];
-    $scope.activeRepo = undefined;
-    
     var sortRepos = function(a, b) {
         return b.num_watchers - a.num_watchers;
     };
@@ -37,60 +27,59 @@ angular.module('App').controller('HomeCtrl', ['$scope', '$http', function($scope
     };
 
     $scope.loading = true;
-    $http({
-        method: 'GET',
-        url: 'api/repos'
-    })
-    .success(function(data) {
-        data.sort(sortRepos);
-        $scope.repos = data;
-        $scope.loading = false;
-        bindTooltip();
-    })
-    .error(function() {
-        throw new Error('Request failed.');
-    });
+    api.repos()
+        .success(function(data) {
+            data.sort(sortRepos);
+            $scope.repos = data;
+            $scope.loading = false;
+            bindTooltip();
+        })
+        .error(function() {
+            throw new Error('Request failed.');
+        });
 
-    $scope.showForksAndStargazers = function() {
+    /*
+    $scope.loadingForks = false;
+    $scope.loadingStargazers = false;
+
+    $scope.repos = [];
+    $scope.activeRepo = undefined;
+
+    var showForksAndStargazers = function() {
         var repoName = this.repo.name,
             i = indexOfRepo(repoName, $scope.repos);
         if (!$scope.repos[i].forks) {
             $scope.loadingForks = true;
-            $http({
-                method: 'GET',
-                url: 'api/repo/' + repoName + '/forks'
-            })
-            .success(function(data) {
-                //data.sort(sortRepos);
-                $scope.repos[i].forks = data;
-                $scope.loadingForks = false;
-                bindTooltip();
-            })
-            .error(function() {
-                throw new Error('Request failed.');
-            });
+            api.forks(repoName)
+                .success(function(data) {
+                    //data.sort(sortRepos);
+                    $scope.repos[i].forks = data;
+                    $scope.loadingForks = false;
+                    bindTooltip();
+                })
+                .error(function() {
+                    throw new Error('Request failed.');
+                });
         }
         if (!$scope.repos[i].stargazers) {
             $scope.loadingStargazers = true;
-            $http({
-                method: 'GET',
-                url: 'api/repo/' + repoName + '/stargazers'
-            })
-            .success(function(data) {
-                //data.sort(sortStargazers);
-                $scope.repos[i].stargazers = data;
-                $scope.loadingStargazers = false;
-                bindTooltip();
-            })
-            .error(function() {
-                throw new Error('Request failed.');
-            });
+            api.stargazers(repoName)
+                .success(function(data) {
+                    //data.sort(sortStargazers);
+                    $scope.repos[i].stargazers = data;
+                    $scope.loadingStargazers = false;
+                    bindTooltip();
+                })
+                .error(function() {
+                    console.log('request failed.');
+                });
         }
         $scope.activeRepo = repoName;
     };
 
-    $scope.hideForksAndStargazers = function() {
+    var hideForksAndStargazers = function() {
         $scope.activeRepo = undefined;
     };
+    */
 
 }]);

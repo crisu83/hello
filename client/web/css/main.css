@@ -5358,15 +5358,17 @@ a:hover {
 }
 .home-ctrl h1 {
   font-size: 3.5714285714285716em;
+  line-height: 100%;
 }
 .home-ctrl h1 > small {
-  font-size: 0.5714285714285714em;
+  font-size: .5em;
+  line-height: 100%;
   color: #999999;
 }
 .home-ctrl .tooltip {
   z-index: 9999;
 }
-.home-ctrl .about {
+.home-ctrl .bio {
   font-size: 1.2857142857142858em;
   font-weight: 100;
   max-width: 450px;

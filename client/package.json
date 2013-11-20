@@ -1,5 +1,5 @@
 {
-    "name": "foliojs-client",
+    "name": "hello-client",
     "description": "A JavaScript powered portfolio for developers.",
     "version": "0.1.0",
     "author": "Christoffer Niska <christoffer.niska@gmail.com>",
@@ -11,7 +11,7 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/Crisu83/foliojs.git"
+        "url": "https://github.com/Crisu83/hello.git"
     },
     "keywords": [
         "application"
