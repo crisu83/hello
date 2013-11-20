@@ -1,4 +1,4 @@
-hello.js
-========
+hello-server
+============
 
 A JavaScript powered portfolio for developers.

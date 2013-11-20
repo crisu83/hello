@@ -1,0 +1,26 @@
+{
+    "name": "hello-client",
+    "description": "A JavaScript powered portfolio for developers.",
+    "version": "0.1.0",
+    "author": "Christoffer Niska <christoffer.niska@gmail.com>",
+    "contributors": [
+        {
+            "name": "Christoffer Niska",
+            "email": "christoffer.niska@gmail.com"
+        }
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Crisu83/hello.git"
+    },
+    "keywords": [
+        "application"
+    ],
+    "license": "Apache-2.0",
+    "devDependencies": {
+        "grunt": "~0.4.1",
+        "grunt-contrib-concat": "~0.3.0",
+        "grunt-contrib-less": "~0.8.1",
+        "grunt-contrib-watch": "~0.5.3"
+    }
+}
