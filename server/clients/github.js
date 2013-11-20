@@ -88,12 +88,6 @@ var github = function () {
         });
     };
 
-    // Authorize with the GitHub API.
-    authorize(config.github.clientId, config.github.clientSecret)
-        .then(function(data) {
-            console.log(data);
-        });
-
     // Exposed methods.
     return {
         /**
