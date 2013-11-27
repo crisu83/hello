@@ -36,21 +36,25 @@ var github = function () {
         var reqOptions = {
             method: method,
             host: ENDPOINT,
-            path: query
+            path: query,
+            headers: {
+                'User-Agent': 'hello-server',
+                'Accept': 'application/json',
+                'Content-Length': 0
+            }
         };
 
         if (data) {
             var dataJson = JSON.stringify(data);
-            reqOptions.headers = {
-                'Content-Type': 'application/json',
-                'Content-Length': dataJson.length
-            };
+            reqOptions.headers['Content-Type'] = 'application/json';
+            reqOptions.headers['Content-Length'] = dataJson.length;
             console.log(method + ' https://' + ENDPOINT + query + ' ' + dataJson);
         } else {
             console.log(method + ' https://' + ENDPOINT + query);
         }
 
         var httpReq = https.request(reqOptions, function (httpRes) {
+            // todo: handle invalid requests
             httpRes.setEncoding('utf8');
             httpRes.on('data', function (chunk) {
                 resData += chunk;
