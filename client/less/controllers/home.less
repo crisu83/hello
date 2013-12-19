@@ -1,50 +1,6 @@
 .home-ctrl {
-  .avatar {
-    border-radius: 5px;
-    display: block;
-    margin: 20px 0;
-    max-width: 300px;
-    width: 100%;
-  }
-
-  h1 {
-    .font-size-px(50px);
-    line-height: 100%;
-
-    > small {
-      font-size: .5em;
-      line-height: 100%;
-      color: @gray-light;
-    }
-  }
-
-  .tooltip {
-    z-index: 9999;
-  }
-
-  .bio {
-    .font-size-px(18px);
-    font-weight: 100;
-    max-width: 450px;
-  }
-
-  .links {
-    list-style: none;
-    padding-left: 0;
-
-    > li {
-      display: inline-block;
-      margin-right: 15px;
-
-      a {
-        .font-size-px(40px);
-        color: @gray-light;
-
-        &:hover {
-          color: @brand-primary;
-        }
-      }
-    }
+  .home-projects {
+    .make-md-column(6);
   }
 
   .repos {
@@ -56,7 +12,7 @@
     }
 
     .panel {
-      .box-shadow(0 0 4px rgba(0,0,0,0.15));
+      .box-shadow(none);
       position: relative;
 
       .panel-body {
@@ -66,32 +22,27 @@
       .repo-details {
         padding: 10px 15px;
 
-        h3 {
-          .font-size-px(24px);
+        h2 {
+          font-size: 24px;
           font-weight: 500;
           margin-top: 0;
-
-          a {
-            color: @text-color;
-          }
         }
 
         .owner > a {
-          .font-size-px(12px);
+          font-size: 12px;
           color: @gray-light;
         }
 
         .description {
-          .font-size-px(16px);
+          font-size: 16px;
           color: @gray;
-          font-style: italic;
           font-weight: 100;
           margin-bottom: 0;
         }
       }
 
       hr {
-        margin: 5px 0;
+        margin: 0;
         border-color: transparent transparent @gray-lighter;
         border-style: solid;
         border-width: 1px;
@@ -102,8 +53,27 @@
         overflow: visible;
 
         a {
-          color: @text-color;
           display: inline-block;
+        }
+
+        .repo-stat {
+          .make-xs-column(2);
+        }
+
+        .repo-tags {
+          .make-xs-column(4);
+
+          > ul {
+            display: inline-block;
+            font-size: 11px;
+            list-style: none;
+            padding-left: 0;
+
+            > li {
+              display: inline-block;
+              margin-left: 5px;
+            }
+          }
         }
       }
 
@@ -112,26 +82,12 @@
       }
 
       .stat-value {
-        .font-size-px(11px);
+        font-size: 11px;
         font-weight: normal;
       }
 
-      .tags {
-        > ul {
-          display: inline-block;
-          .font-size-px(11px);
-          list-style: none;
-          padding-left: 0;
-
-          > li {
-            display: inline-block;
-            margin-left: 5px;
-          }
-        }
-      }
-
       .repo-links {
-        .font-size-px(12px);
+        font-size: 12px;
 
         .links {
           padding: 10px 15px;
@@ -177,6 +133,57 @@
       background: url(../images/loader-lg.gif) 0 0 no-repeat transparent;
       content: "";
       display: block;
+    }
+  }
+
+  .home-sidebar {
+    .make-md-column(3);
+
+    > .avatar {
+      border-radius: 5px;
+      display: block;
+      margin: 20px 0;
+      max-width: 262.5px;
+      width: 100%;
+    }
+  }
+
+  h1 {
+    font-size: 50px;
+    line-height: 35px;
+
+    > small {
+      font-size: 25px;
+      line-height: 100%;
+      color: @gray-light;
+    }
+  }
+
+  .tooltip {
+    z-index: 9999;
+  }
+
+  .bio {
+    font-weight: 100;
+    max-width: 450px;
+  }
+
+  .links {
+    list-style: none;
+    padding-left: 0;
+
+    > li {
+      display: inline-block;
+      margin-right: 15px;
+
+      a {
+        font-size: 40px;
+        color: @gray-light;
+
+        &:hover {
+          color: @brand-primary;
+        }
+      }
     }
   }
 }

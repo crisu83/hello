@@ -15,6 +15,8 @@ angular.module('Hello', ['ui.router'])
 // application controller
 angular.module('Hello').controller('AppCtrl', ['$scope', 'api', function($scope, api) {
 
+    $scope.yearNow = new Date().getFullYear();
+
     api.settings()
         .success(function(config) {
             $scope.githubLogin    = config.github.login;
