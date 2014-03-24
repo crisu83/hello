@@ -12,11 +12,11 @@ var mongoose = require('mongoose'),
 var repos = function(params) {
 
     if (!config.github.login) {
-        throw new Error('Configuration paramter "github.login" must be set.');
+        throw new Error('Configuration parameter "github.login" must be set.');
     }
 
     if (!config.cacheDuration && config.cacheDuration !== 0) {
-        throw new Error('Configuration paramter "cacheDuration" must be set.');
+        throw new Error('Configuration parameter "cacheDuration" must be set.');
     }
 
     // Repository schema.
@@ -97,14 +97,6 @@ var repos = function(params) {
     // Exposed methods.
     return {
         /**
-         *
-         * @param req
-         * @param res
-         */
-        authenticate: function(req, res) {
-
-        },
-        /**
          * Lists all repositories.
          * @param req
          * @param res
@@ -118,7 +110,6 @@ var repos = function(params) {
              */
             var find = function() {
                 return helper.find(Repo, {
-                    owner_name: ownerName,
                     fork: false
                 });
             };

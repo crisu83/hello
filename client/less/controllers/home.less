@@ -117,22 +117,8 @@
             font-style: italic;
             margin: 15px 0 0;
           }
-
-          .loader {
-            .square(16px);
-            background: url(../images/loader-xs.gif) 0 0 no-repeat transparent;
-            content: "";
-            display: block;
-          }
         }
       }
-    }
-
-    .loader {
-      .square(48px);
-      background: url(../images/loader-lg.gif) 0 0 no-repeat transparent;
-      content: "";
-      display: block;
     }
   }
 
@@ -175,6 +161,10 @@
     > li {
       display: inline-block;
       margin-right: 15px;
+
+      &:last-child {
+        margin-right: 0;
+      }
 
       a {
         font-size: 40px;

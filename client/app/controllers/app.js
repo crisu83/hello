@@ -19,6 +19,7 @@ angular.module('Hello').controller('AppCtrl', ['$scope', 'api', function($scope,
         .success(function(profile) {
             $scope.gravatarId = profile.gravatar_id;
             $scope.fullName   = profile.full_name;
+            $scope.bio        = profile.bio;
             $scope.pageTitle  = $scope.githubLogin + ' (' + $scope.fullName + ') · Portfolio';
         })
         .error(function() {

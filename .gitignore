@@ -1,5 +1,9 @@
-.vagrant/*
-.idea/*
+.vagrant/
+.idea/
+client_yo/
+client_gulp/
 server/config.js
-*/node_modules/*
+client/app/bower_components/
+*/node_modules/
 mongod.lock
+nohup.out

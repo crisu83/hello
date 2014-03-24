@@ -152,7 +152,7 @@ function minErr(module) {
     -encodeUriSegment,
     -encodeUriQuery,
     -angularInit,
-    -bootstrap,
+    -provision,
     -snake_case,
     -bindJQuery,
     -assertArg,
@@ -1181,20 +1181,20 @@ function encodeUriQuery(val, pctEncodeSpaces) {
  *
  * @description
  *
- * Use this directive to auto-bootstrap an application. Only
+ * Use this directive to auto-provision an application. Only
  * one ngApp directive can be used per HTML document. The directive
  * designates the root of the application and is typically placed
  * at the root of the page.
  *
  * The first ngApp found in the document will be auto-bootstrapped. To use multiple applications in
- * an HTML document you must manually bootstrap them using {@link angular.bootstrap}.
+ * an HTML document you must manually provision them using {@link angular.bootstrap}.
  * Applications cannot be nested.
  *
  * In the example below if the `ngApp` directive were not placed
  * on the `html` element then the document would not be compiled
  * and the `{{ 1+2 }}` would not be resolved to `3`.
  *
- * `ngApp` is the easiest way to bootstrap an application.
+ * `ngApp` is the easiest way to provision an application.
  *
  <doc:example>
    <doc:source>
@@ -1249,13 +1249,13 @@ function angularInit(element, bootstrap) {
 
 /**
  * @ngdoc function
- * @name angular.bootstrap
+ * @name angular.provision
  * @description
  * Use this function to manually start up angular application.
  *
  * See: {@link guide/bootstrap Bootstrap}
  *
- * Note that ngScenario-based end-to-end tests cannot use this function to bootstrap manually.
+ * Note that ngScenario-based end-to-end tests cannot use this function to provision manually.
  * They must use {@link api/ng.directive:ngApp ngApp}.
  *
  * @param {Element} element DOM element which is the root of angular application.
@@ -7190,7 +7190,7 @@ function $HttpProvider() {
      *   JSON vulnerability}
      * - {@link http://en.wikipedia.org/wiki/Cross-site_request_forgery XSRF}
      *
-     * Both server and the client must cooperate in order to eliminate these threats. Angular comes
+     * Both server and the client_old must cooperate in order to eliminate these threats. Angular comes
      * pre-configured with strategies that address these issues, but for this to work backend server
      * cooperation is required.
      *
@@ -12335,7 +12335,7 @@ function $SceDelegateProvider() {
  * bindings.  (HTML is just one example of a context where rendering user controlled input creates
  * security vulnerabilities.)
  *
- * For the case of HTML, you might use a library, either on the client side, or on the server side,
+ * For the case of HTML, you might use a library, either on the client_old side, or on the server side,
  * to sanitize unsafe HTML before binding to the value and rendering it in the document.
  *
  * How would you ensure that every place that used these types of bindings was bound to a value that
@@ -15124,7 +15124,7 @@ function FormController(element, attrs) {
  *
  * # Submitting a form and preventing the default action
  *
- * Since the role of forms in client-side Angular applications is different than in classical
+ * Since the role of forms in client_old-side Angular applications is different than in classical
  * roundtrip apps, it is desirable for the browser not to translate the form submission into a full
  * page reload that sends the data to the server. Instead some javascript logic should be triggered
  * to handle the form submission in an application-specific way.
@@ -17478,7 +17478,7 @@ var ngControllerDirective = [function() {
    </pre>
  */
 
-// ngCsp is not implemented as a proper directive any more, because we need it be processed while we bootstrap
+// ngCsp is not implemented as a proper directive any more, because we need it be processed while we provision
 // the system (before $parse is instantiated), for this reason we just have a csp() fn that looks for ng-csp attribute
 // anywhere in the current doc
 
@@ -20117,7 +20117,7 @@ var styleDirective = valueFn({
 });
 
   //try to bind to jquery now so that one can write angular.element().read()
-  //but we will rebind on bootstrap again.
+  //but we will rebind on provision again.
   bindJQuery();
 
   publishExternalAPI(angular);

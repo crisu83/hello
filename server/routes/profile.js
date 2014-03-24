@@ -59,6 +59,7 @@ var profile = function(params) {
                     full_name: data.name,
                     email: data.email,
                     location: data.location,
+                    bio: config.bio,
                     gravatar_id: data.gravatar_id,
                     github_url: data.html_url,
                     num_repos: data.public_repos,
