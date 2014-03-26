@@ -3,7 +3,7 @@ var https  = require('https'),
     config = require('../config.js');
 
 /**
- * GitHub API client.
+ * GitHub API client_old.
  * @returns {Object}
  */
 var github = function () {
@@ -78,20 +78,6 @@ var github = function () {
         return deferred.promise;
     };
 
-    /**
-     * Authorizes with the GitHub API.
-     * @param {string} clientId
-     * @param {string} clientSecret
-     * @returns {promise}
-     */
-    var authorize = function(clientId, clientSecret) {
-        return callApi('/authorizations/clients/' + clientId, METHOD.PUT, {
-            client_secret: clientSecret,
-            scope: ['user', 'repo'],
-            note: 'hello client'
-        });
-    };
-
     // Exposed methods.
     return {
         /**
@@ -108,7 +94,7 @@ var github = function () {
          * @returns {promise}
          */
         repos: function(owner) {
-            return callApi('/users/' + owner + '/repos?type=owner&sort=pushed');
+            return callApi('/users/' + owner + '/repos');
         },
         /**
          * Lists all forks for a specific repository.

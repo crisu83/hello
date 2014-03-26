@@ -24,6 +24,8 @@ sudo apt-get install -y nodejs
 
 # grunt
 sudo npm install -g grunt-cli
+sudo npm install -g yo
+sudo npm install -g generator-gulp-webapp
 
 # local node modules
 cd /vagrant/client && sudo npm install

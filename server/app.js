@@ -3,7 +3,7 @@ var express  = require('express'),
     mongoose = require('mongoose'),
     config   = require('./config.js');
 
-// bootstrap express
+// provision express
 var app = express();
 app.use(express.logger());
 app.use(express.bodyParser());
@@ -16,6 +16,9 @@ app.configure('production', function(){
 
 // we serve static files under /static
 app.use('/static', express.static(config.webRoot));
+
+// we serve smaller projects under /p
+app.use('/p', express.static(config.webRoot));
 
 // connect to mongodb
 mongoose.connect('mongodb://localhost/hello');

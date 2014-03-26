@@ -3,11 +3,11 @@ angular.module('Hello', ['ui.router'])
         // enable html5 mode to get rid of the hash in the url
         $locationProvider.html5Mode(true);
         // all unmatched urls should be sent to the root url
-        $urlRouterProvider.otherwise('home');
+        $urlRouterProvider.otherwise('/');
         // set up states
         $stateProvider
             .state('home', {
-                url: '/home',
+                url: '/',
                 templateUrl: 'static/partials/home.html',
                 controller: 'HomeCtrl'
             });
