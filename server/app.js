@@ -41,7 +41,7 @@ app.get('/api/repo/:repo/forks', repos.findForks);
 app.get('/api/repo/:repo/stargazers', repos.findStargazers);
 
 // all other requests are redirected to our index.html file
-app.get('*', function(req, res) {
+app.get('/', function(req, res) {
     res.sendfile('index.html', {root: config.webRoot});
 });
 
